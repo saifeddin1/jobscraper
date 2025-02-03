@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Job
+from .models import Job, Settings
 from .scrapers import scrape_all_jobs
 
 @admin.register(Job)
@@ -12,3 +12,6 @@ class JobAdmin(admin.ModelAdmin):
         Scrape jobs from the selected sources.
         """
         scrape_all_jobs()
+
+
+admin.site.register(Settings)

@@ -18,13 +18,13 @@ body {
     background: #fff;
     padding: 30px 40px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
     width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 400px;
 }
 
 h2 {
+    text-align: center;
     margin-bottom: 20px;
     font-size: 1.8em;
     color: #333;

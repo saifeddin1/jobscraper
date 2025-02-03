@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator   
- 
+   
+from .models import Settings
 from notifications.utils import create_notification
 from .models import Job  
 from collections import Counter 
@@ -102,4 +103,21 @@ def toggle_favorite(request, job_id):
     print("Current favorited jobs:", user.favorited_jobs.all())  # Debugging
     return JsonResponse({"success": True})
 
- 
+
+
+@login_required
+def settings_view(request):
+    settings, created = Settings.objects.get_or_create(id=1)  # Ensure only one settings instance exists
+
+    if request.method == "POST":
+        interval_number = request.POST.get("interval_number")
+        interval_frequency = request.POST.get("interval_frequency")
+
+        # Update settings
+        settings.interval_number = int(interval_number)
+        settings.interval_frequency = interval_frequency
+        settings.save()
+
+        return redirect("settings")  # Redirect to refresh the page
+
+    return render(request, "scraper/settings.html", {"settings": settings})

@@ -1,13 +1,18 @@
 
 from datetime import datetime
+from core.models import Settings
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from dateutil.relativedelta import relativedelta
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
+settings = Settings.objects.first()
 
 def scrape_offers_task(sender, **kwargs):
+    settings.refresh_from_db()
     schedule, _ = IntervalSchedule.objects.get_or_create(
-        every=1,
-        period=IntervalSchedule.HOURS,   
+        every=settings.interval_number or 1,
+        period=settings.interval_frequency or 'hours',   
     )
     try:
         task = PeriodicTask.objects.get(name='Scrape offers')
@@ -24,3 +29,8 @@ def scrape_offers_task(sender, **kwargs):
         )
 
  
+
+@receiver(post_save, sender=Settings)
+def update_task(sender, instance, created, **kwargs): 
+    print('instance: ', instance.interval_number)
+    scrape_offers_task(sender)

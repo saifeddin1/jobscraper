@@ -8,6 +8,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('toggle-favorite/<int:job_id>/', views.toggle_favorite, name='toggle_favorite'),
     path('saved_jobs/', views.saved_jobs_view, name='saved_jobs'),
-  
+    path("settings/", views.settings_view, name="settings"),
+
 
 ]

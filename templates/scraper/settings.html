@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="settings-container">
+  <h1>Settings</h1>
+  <form method="POST">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label for="interval_number">Interval Number </label>
+      <input type="number" id="interval_number" name="interval_number" value="{{ settings.interval_number }}" required />
+    </div>
+
+    <div class="form-group">
+      <label for="interval_frequency">Interval Frequency </label>
+      <select id="interval_frequency" name="interval_frequency">
+        <option value="hours" {% if settings.interval_frequency == "hours" %}selected{% endif %}>Hours</option>
+        <option value="minutes" {% if settings.interval_frequency == "minutes" %}selected{% endif %}>Minutes</option>
+        <option value="seconds" {% if settings.interval_frequency == "seconds" %}selected{% endif %}>Seconds</option>
+        <option value="days" {% if settings.interval_frequency == "days" %}selected{% endif %}>Days</option>
+      </select>
+    </div>
+
+    <button type="submit" class="save-btn">Save Settings</button>
+  </form>
+</div>
+{% endblock %}
+ 

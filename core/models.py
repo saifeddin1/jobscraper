@@ -14,5 +14,18 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+ 
 
+class Settings(models.Model):
+    FREQUENCY_CHOICES = [
+        ("hours", "Hours"),
+        ("minutes", "Minutes"),
+        ("seconds", "Seconds"),
+        ("days", "Days"),
+    ]
+
+    interval_number = models.IntegerField(default=1)
+    interval_frequency = models.CharField(
+        max_length=10, choices=FREQUENCY_CHOICES, default="hours"
+    )
  
