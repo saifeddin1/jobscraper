@@ -41,8 +41,26 @@
           </li>
         </ul>
         <!-- Help Section at the Bottom -->
-        <div class="sidebar-help">
+        <div class="sidebar-help" id="helpButton">
           <i class="fas fa-question-circle"></i> Help
+        </div>
+
+        <!-- Help Popup Modal -->
+        <div id="helpPopup" class="help-popup">
+          <div class="help-popup-content">
+            <span class="close-popup" id="closeHelpPopup">&times;</span>
+            <h2>About This App</h2>
+            <p>
+              This application helps users find and save job postings from
+              various sources.
+            </p>
+            <ul>
+              <li>🔍 Browse job listings from different websites.</li>
+              <li>❤️ Save jobs for later.</li>
+              <li>📊 View analytics and job trends in the dashboard.</li>
+              <li>⚙️ Customize your settings for job updates.</li>
+            </ul> 
+          </div>
         </div>
       </aside>
 
@@ -258,6 +276,29 @@
 
         // Fetch notifications initially
         fetchNotifications();
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const helpButton = document.getElementById("helpButton");
+        const helpPopup = document.getElementById("helpPopup");
+        const closeHelpPopup = document.getElementById("closeHelpPopup");
+
+        // Show popup when clicking the Help button
+        helpButton.addEventListener("click", function () {
+          helpPopup.style.display = "flex";
+        });
+
+        // Close popup when clicking the close button
+        closeHelpPopup.addEventListener("click", function () {
+          helpPopup.style.display = "none";
+        });
+
+        // Close popup when clicking outside of it
+        window.addEventListener("click", function (event) {
+          if (event.target === helpPopup) {
+            helpPopup.style.display = "none";
+          }
+        });
       });
     </script>
     {% block scripts %}{% endblock %}

@@ -201,3 +201,16 @@ text-align: center;
   background-color: rgb(2 78 40 / 76%);;
   color: white;
 }
+
+.search-container {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+#jobSearch {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}

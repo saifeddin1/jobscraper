@@ -3,7 +3,11 @@
 {% endblock %}{% block content %}
 
 <h1>Latest Job Offers</h1>
-<div class="grid"> 
+<!-- Search Bar -->
+<div class="search-container">
+  <input type="text" id="jobSearch" placeholder="Search jobs..." />
+</div>
+<div class="grid" id="jobList">
   <!-- Job cards will be displayed here -->
   {% for job in jobs %}
   <a href="{% url 'job_detail' job.id %}">
@@ -48,7 +52,27 @@
     setTimeout(() => {
       const loadingOverlay = document.getElementById("loading-overlay");
       const cards = document.querySelectorAll(".card");
+      const jobCards = document.querySelectorAll("#jobList a");
 
+      const searchInput = document.getElementById("jobSearch");
+
+      searchInput.addEventListener("keyup", function () {
+        const searchTerm = searchInput.value.toLowerCase();
+        console.log("searchTerm: ", searchTerm);
+
+        jobCards.forEach((card) => {
+          const title = card.querySelector(".card h3").innerText.toLowerCase();
+          console.log("title: ", title);
+
+          if (title.includes(searchTerm)) {
+            console.log("trzzz: ", title);
+
+            card.style.display = "block"; // Show matching jobs
+          } else {
+            card.style.display = "none"; // Hide non-matching jobs
+          }
+        });
+      });
       // Hide the loading overlay
       if (loadingOverlay) {
         loadingOverlay.style.display = "none";
