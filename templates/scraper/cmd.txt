@@ -1,0 +1,1 @@
+cd .. && source ./venv/scripts/activate && cd jobscraper

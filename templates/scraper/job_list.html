@@ -1,0 +1,92 @@
+{% extends "base.html" %} {% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'css/jobs.css' %}" />
+{% endblock %}{% block content %}
+
+<h1>Latest Job Offers</h1>
+<div class="grid"> 
+  <!-- Job cards will be displayed here -->
+  {% for job in jobs %}
+  <a href="{% url 'job_detail' job.id %}">
+    <div class="card" data-job-id="{{ job.id }}">
+      <i
+        class="heart-icon far fa-heart {% if job in user.favorited_jobs.all %}fa-solid{% endif %}"
+        onclick="toggleFavorite(event, '{{ job.id }}')"
+      ></i>
+      {% if job.source_logo %}
+      <img src="{{ job.source_logo }}" alt="Source Logo" />
+      {% endif %}
+
+      <h3>{{ job.title|truncatechars:"100" }}</h3>
+      <p class="date-posted">
+        Date Posted: {{ job.date_posted|default:"N/A" }}
+      </p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+<div class="pagination">
+  {% if jobs.has_previous %}
+  <a href="?page=1">&laquo; First</a>
+  <a href="?page={{ jobs.previous_page_number }}">Previous</a>
+  {% endif %}
+
+  <span class="current"
+    >Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}</span
+  >
+
+  {% if jobs.has_next %}
+  <a href="?page={{ jobs.next_page_number }}">Next</a>
+  <a href="?page={{ jobs.paginator.num_pages }}">Last &raquo;</a>
+  {% endif %}
+</div>
+
+{% endblock %} {% block scripts %}
+
+<script>
+  // Hide the loading overlay and show the cards after 2 seconds
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      const loadingOverlay = document.getElementById("loading-overlay");
+      const cards = document.querySelectorAll(".card");
+
+      // Hide the loading overlay
+      if (loadingOverlay) {
+        loadingOverlay.style.display = "none";
+      }
+
+      // Show all the cards
+      cards.forEach((card) => {
+        card.classList.add("show");
+      });
+    }, 2000);
+  });
+
+  function toggleFavorite(event, jobId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let heartIcon = event.target;
+    let isFavorited = heartIcon.classList.contains("favorited");
+
+    // Toggle class for instant UI feedback
+    heartIcon.classList.toggle("favorited", !isFavorited);
+
+    fetch(`/toggle-favorite/${jobId}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) {
+          alert(data.error); // Show error message
+          heartIcon.classList.toggle("favorited", isFavorited); // Revert UI if error
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("An unexpected error occurred.");
+        heartIcon.classList.toggle("favorited", isFavorited); // Revert UI if error
+      });
+    // Refresh the page to reflect changes
+    location.reload();
+  }
+</script>
+
+{% endblock %}

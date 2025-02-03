@@ -1,0 +1,203 @@
+ .container {
+   max-width: 1200px;
+   margin: 20px auto;
+   padding: 20px;
+   background: #fff;
+   border-radius: 8px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+ }
+
+ h1 {
+   text-align: center;
+   margin-bottom: 20px;
+ }
+
+ .grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+   gap: 20px;
+   position: relative;
+   min-height: 200px;
+ }
+
+ .loading-overlay {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: rgba(255, 255, 255, 0.8);
+   z-index: 1;
+ }
+
+ .spinner {
+   border: 5px solid #ddd;
+   border-top: 5px solid #007bff;
+   border-radius: 50%;
+   width: 50px;
+   height: 50px;
+   animation: spin 1s linear infinite;
+ }
+
+ .card {
+  font-size: 15px;
+   background: #fff;
+   padding: 20px;
+   height: 150px;
+   border: 1px solid #ddd;
+   border-radius: 8px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   text-align: center;
+   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+ }
+
+ .card.show {
+   display: block;
+   /* Visible after loading animation ends */
+ }
+
+ .card:hover {
+   transform: unset;
+ }
+
+ .card img {
+   max-width: 80px; 
+   border-radius: 50%;
+ }
+
+ .card h3 {
+   margin: 10px 0;
+   font-size: 15px;
+   color: rgb(73, 73, 73);
+ }
+
+ .card .date-posted {
+   font-size: 0.9em;
+   color: rgb(114, 113, 113);
+ }
+
+ a {
+   text-decoration: none;
+   color: inherit;
+ }
+
+ @keyframes spin {
+   from {
+     transform: rotate(0deg);
+   }
+
+   to {
+     transform: rotate(360deg);
+   }
+ }
+
+ .heart-icon { 
+   font-size: 24px;
+   cursor: pointer;
+   color: rgb(2 78 40 / 76%);
+   float: right;
+   transition: color 0.3s ease-in-out;
+ }
+
+ .note-icon {
+   position: relative;
+   bottom: 90px;
+   right: 60%;
+   font-size: 24px;
+   cursor: pointer;
+   color: #ccc;
+   transition: color 0.3s ease-in-out;
+ }
+
+  
+.pagination {
+text-align: center;
+  margin-top: 20px;
+}
+
+.pagination a, .pagination span {
+  display: inline-block;
+  padding: 8px 12px;
+  margin: 0 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+}
+
+.pagination a:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.pagination .current {
+  font-weight: bold;
+}
+
+
+.job-detail-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-detail-container h1 {
+  text-align: center;
+  color: #333;
+}
+
+.job-meta p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.company-logo {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.company-logo img {
+  max-width: 150px;
+  border-radius: 8px;
+}
+
+.job-description {
+  margin-top: 20px;
+}
+
+.job-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.apply-btn {
+  text-decoration: none;
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.favorite-btn {
+  background: none;
+  border: 1px solid rgb(2 78 40 / 76%);
+  color: rgb(2 78 40 / 76%);
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.favorite-btn.favorited {
+  background-color: rgb(2 78 40 / 76%);;
+  color: white;
+}

@@ -1,0 +1,136 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+<div class="dashboard-container">
+  <h1>Welcome to Your Dashboard</h1>
+
+  <!-- Job Stats Cards -->
+  <div class="dashboard-cards">
+    <div class="dashboard-card">
+      <h3>Total Jobs</h3>
+      <p>{{ jobs }}</p>
+    </div>
+    <div class="dashboard-card">
+      <h3>Saved Jobs</h3>
+      <p>{{ saved }}</p>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="dashboard-charts">
+    <div class="dashboard-chart-card">
+      <h3>Job Distribution by Source Website</h3>
+      <canvas id="jobSourceChart"></canvas>
+    </div>
+    <div class="dashboard-chart-card">
+      <h3>Top 5 Companies Hiring</h3>
+      <canvas id="jobCompanyChart"></canvas>
+    </div>
+    <div class="dashboard-chart-card">
+      <h3>Jobs by Location</h3>
+      <canvas id="jobLocationChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Jobs Table -->
+  <div class="dashboard-table-container">
+    <h3>Recent Job Listings</h3>
+    <table class="dashboard-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Location</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in job_list %}
+        <tr>
+          <td>{{ job.title }}</td>
+          <td>{{ job.company|default:"N/A" }}</td>
+          <td>{{ job.location|default:"N/A" }}</td>
+          <td><a href="{{ job.job_url }}" target="_blank">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const chartData = {{ chart_data|safe }};
+
+    // Function to generate random colors
+    function generateColors(count) {
+        let colors = [];
+        for (let i = 0; i < count; i++) {
+            let color = `rgba(${Math.floor(Math.random() * 255)},
+                              ${Math.floor(Math.random() * 255)},
+                              ${Math.floor(Math.random() * 255)}, 0.6)`;
+            colors.push(color);
+        }
+        return colors;
+    }
+
+    // Generate different colors for the "Jobs by Source" chart
+    const sourceColors = generateColors(chartData.sources.length);
+
+    // Jobs by Source Website (Bar Chart) - Now with different colors
+    new Chart(document.getElementById("jobSourceChart"), {
+      type: "bar",
+      data: {
+        labels: chartData.sources,
+        datasets: [{
+          label: "Jobs by Source",
+          data: chartData.source_counts,
+          backgroundColor: sourceColors,  // Assign different colors
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Top 5 Companies Hiring (Pie Chart)
+    new Chart(document.getElementById("jobCompanyChart"), {
+      type: "pie",
+      data: {
+        labels: chartData.companies,
+        datasets: [{
+          label: "Top Hiring Companies",
+          data: chartData.company_counts,
+          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"]
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+
+    // Jobs by Location (Horizontal Bar Chart)
+      new Chart(document.getElementById("jobLocationChart"), {
+      type: "bar",  // Use "bar" instead of "horizontalBar"
+      data: {
+        labels: chartData.locations,
+        datasets: [{
+          label: "Jobs by Location",
+          data: chartData.location_counts,
+          backgroundColor: "rgba(75, 192, 192, 0.6)"
+        }]
+      },
+      options: {
+        responsive: true,
+        indexAxis: 'y',  // This makes the bar chart horizontal
+        scales: {
+          x: { beginAtZero: true }
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

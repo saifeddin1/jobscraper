@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{%endblock%}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    {% block styles %}{% endblock %}
+  </head>
+
+  <body>
+    <div class="main-container">
+      <aside class="sidebar">
+        <h3>Menu</h3>
+        <ul>
+          <li>
+            <a class="sidebar-link" href="{% url 'dashboard' %}">
+              <i class="fa fa-tachometer-alt"></i> Dashboard
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-link" href="{% url 'job_list' %}">
+              <i class="fa fa-briefcase"></i> Jobs
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-link" href="{% url 'saved_jobs' %}">
+              <i class="fa fa-heart"></i> Saved Jobs
+            </a>
+          </li>
+
+          <li>
+            <a class="sidebar-link" href="#">
+              <i class="fa fa-cog"></i> Settings
+            </a>
+          </li>
+        </ul>
+        <!-- Help Section at the Bottom -->
+        <div class="sidebar-help">
+          <i class="fas fa-question-circle"></i> Help
+        </div>
+      </aside>
+
+      <main class="content">{% block content %} {% endblock %}</main>
+      <div class="user-profile">
+        <!-- Notification Bell -->
+        <div class="notification-icon" id="notificationIcon">
+          <i class="fas fa-bell"></i>
+          <span class="notification-count" id="notificationCount">0</span>
+        </div>
+
+        <!-- Notification Dropdown -->
+        <div class="notification-dropdown" id="notificationDropdown">
+          <h4>Notifications (<span id="notificationTotal">0</span>)</h4>
+          <div id="notificationList">
+            <p class="no-notifications">No new notifications</p>
+          </div>
+        </div>
+
+        <!-- Hidden Notification Template -->
+        <div
+          id="notificationTemplate"
+          class="notification-item unread"
+          style="display: none"
+        >
+          <i class="fas fa-info-circle notification-info-icon"></i>
+          <div class="notification-content">
+            <span class="notification-message"></span>
+            <span class="notification-date"></span>
+          </div>
+        </div>
+
+        <div class="user-icon" id="userIcon">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <p>{{ user.username }}</p>
+          <a href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const userIcon = document.getElementById("userIcon");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        let sidebarLinks = document.querySelectorAll(".sidebar-link");
+        let currentUrl = window.location.pathname; // Get current URL path
+
+        userIcon.addEventListener("click", function (event) {
+          dropdownMenu.classList.toggle("show");
+          event.stopPropagation(); // Prevents closing when clicking inside
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !userIcon.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.classList.remove("show");
+          }
+        });
+
+        sidebarLinks.forEach((link) => {
+          if (link.getAttribute("href") === currentUrl) {
+            link.classList.add("active"); // Add active class
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const notificationIcon = document.getElementById("notificationIcon");
+        const notificationDropdown = document.getElementById(
+          "notificationDropdown"
+        );
+        const notificationList = document.getElementById("notificationList");
+        const notificationCount = document.getElementById("notificationCount");
+        const notificationTotal = document.getElementById("notificationTotal");
+        const notificationTemplate = document.getElementById(
+          "notificationTemplate"
+        );
+        const loadMoreBtn = document.createElement("button");
+
+        loadMoreBtn.innerText = "Load More";
+        loadMoreBtn.classList.add("load-more-btn");
+
+        let currentPage = 1;
+        let totalLoadedNotifications = 0; // Track how many notifications have been loaded
+
+        // Function to fetch notifications
+        function fetchNotifications(page = 1, append = false) {
+          fetch(`/notifications/?page=${page}`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (!append) {
+                notificationList.innerHTML = "";
+                totalLoadedNotifications = 0; // Reset counter when loading fresh data
+              }
+
+              notificationCount.style.display =
+                data.unread_count > 0 ? "block" : "none";
+              notificationCount.innerText = data.unread_count;
+              notificationTotal.innerText = data.notifications.length;
+
+              if (data.notifications.length > 0) {
+                data.notifications.forEach((notification) => {
+                  let notificationItem = notificationTemplate.cloneNode(true);
+                  notificationItem.style.display = "flex"; // Make it visible
+                  notificationItem.classList.remove("unread");
+                  if (!notification.is_read) {
+                    notificationItem.classList.add("unread");
+                  }
+
+                  notificationItem.querySelector(
+                    ".notification-message"
+                  ).innerHTML = notification.message;
+                  notificationItem.querySelector(
+                    ".notification-date"
+                  ).innerText = formatDate(notification.created_at);
+
+                  // Click event to mark as read
+                  notificationItem.addEventListener("click", function () {
+                    markAsRead(notification.id, notificationItem);
+                  });
+
+                  notificationList.appendChild(notificationItem);
+                  totalLoadedNotifications++; // Increase counter
+                });
+
+                // Hide "Load More" button if 10 or more notifications are loaded
+                if (totalLoadedNotifications >= 10) {
+                  loadMoreBtn.style.display = "none";
+                } else if (data.has_next) {
+                  currentPage = data.next_page;
+                  if (!document.querySelector(".load-more-btn")) {
+                    notificationDropdown.appendChild(loadMoreBtn);
+                  }
+                  loadMoreBtn.style.display = "block"; // Ensure visibility if needed
+                } else {
+                  loadMoreBtn.remove(); // No more pages
+                }
+              } else if (page === 1) {
+                notificationList.innerHTML =
+                  '<p class="no-notifications">No new notifications</p>';
+              }
+            })
+            .catch((error) =>
+              console.error("Error fetching notifications:", error)
+            );
+        }
+
+        // Function to mark a notification as read
+        function markAsRead(notificationId, element) {
+          fetch(`/notifications/mark-as-read/${notificationId}/`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                element.classList.remove("unread");
+                updateUnreadCount();
+              }
+            })
+            .catch((error) =>
+              console.error("Error marking notification as read:", error)
+            );
+        }
+
+        // Function to update unread count
+        function updateUnreadCount() {
+          let unreadItems = document.querySelectorAll(
+            ".notification-item.unread"
+          );
+          notificationCount.style.display =
+            unreadItems.length > 0 ? "block" : "none";
+          notificationCount.innerText = unreadItems.length;
+        }
+
+        // Function to format date in English (MM/DD/YYYY HH:mm AM/PM)
+        function formatDate(dateString) {
+          let createdAt = new Date(dateString);
+          return createdAt.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
+        }
+
+        // Show/Hide Notification Dropdown
+        notificationIcon.addEventListener("click", function (event) {
+          event.stopPropagation();
+          notificationDropdown.classList.toggle("show");
+          fetchNotifications(); // Load first page of notifications
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !notificationIcon.contains(event.target) &&
+            !notificationDropdown.contains(event.target)
+          ) {
+            notificationDropdown.classList.remove("show");
+          }
+        });
+
+        // Load More Button Click
+        loadMoreBtn.addEventListener("click", function () {
+          fetchNotifications(currentPage, true);
+        });
+
+        // Fetch notifications initially
+        fetchNotifications();
+      });
+    </script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

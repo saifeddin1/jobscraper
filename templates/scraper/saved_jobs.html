@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'css/jobs.css' %}" />
+{% endblock %} {% block content %}
+
+<div class="grid">
+  {% for job in jobs %}
+  <a href="{% url 'job_detail' job.id %}">
+    <div class="card" data-job-id="{{ job.id }}">
+      {% if job.source_logo %}
+      <img src="{{ job.source_logo }}" alt="Source Logo" />
+      {% endif %}
+
+      <h3>{{ job.title|truncatechars:"100" }}</h3>
+      <p class="date-posted">
+        Date Posted: {{ job.date_posted|default:"N/A" }}
+      </p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+{% endblock %}

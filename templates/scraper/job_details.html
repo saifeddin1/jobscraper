@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/jobs.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="job-detail-container">
+    <h1>{{ job.title }}</h1>
+    
+    <div class="job-meta">
+        {% if job.company %}
+        <p><strong>Company:</strong> {{ job.company }}</p>
+        {% endif %}
+        <p><strong>Location:</strong> {{ job.location|default:"Remote" }}</p>
+        <p><strong>Date Posted:</strong> {{ job.date_posted|default:"N/A" }}</p>
+    </div>
+
+    {% if job.source_logo %}
+    <div class="company-logo">
+        <img src="{{ job.source_logo }}" alt="Company Logo">
+    </div>
+    {% endif %}
+
+    <div class="job-description">
+        <h3>Job Description</h3>
+        <p>{{ job.description }}</p>
+    </div>
+
+    <div class="job-actions">
+        <a href="{{ job.job_url }}" target="_blank" class="apply-btn">Apply Now</a>
+        <button class="favorite-btn {% if job in user.favorited_jobs.all %}favorited{% endif %}" 
+                onclick="toggleFavorite(event, '{{ job.id }}')">
+            {% if job in user.favorited_jobs.all %}
+            ★ Saved
+            {% else %}
+            ☆ Save Job
+            {% endif %}
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleFavorite(event, jobId) {
+        event.preventDefault();
+        let favoriteBtn = event.target;
+        let isFavorited = favoriteBtn.classList.contains("favorited");
+
+        fetch(`/toggle-favorite/${jobId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    favoriteBtn.classList.toggle("favorited", !isFavorited);
+                    favoriteBtn.innerText = isFavorited ? "☆ Save Job" : "★ Saved";
+                } else {
+                    alert("Error saving job.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An unexpected error occurred.");
+            });
+    }
+</script>
+{% endblock %}
