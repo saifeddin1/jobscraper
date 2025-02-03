@@ -1,0 +1,42 @@
+################
+setting up redis
+################
+Open powershel and run `wsl`
+$ sudo apt update
+$ sudo apt install redis-server
+$ sudo vim /etc/redis/redis.conf 
+press "i" to enter insert mode
+change supervised no to supervised systemd
+exit vim by entring :wq (save and exit)
+
+
+if vim is stuck use this command instead 
+$ TERM=vt100 sudo vim /etc/redis/redis.conf
+$ sudo systemctl restart redis.service
+Note:
+if this error appear 
+"System has not been booted with systemd as init system (PID 1). Can't operate. Failed to connect to bus: Host is down" 
+try this command
+$ sudo service redis-server start
+or
+sudo service redis-server start --daemonize yes
+
+## Check this link if it didn't work (https://gist.github.com/cromat/a065136db5bdc40f21dc139567ad0340)
+
+##################################################################################################
+
+#####################
+Runing celery workers
+#####################
+(execute these  two commands in seprate thirminals in the virtual env)
+
+celery -A jscraper worker -P solo --loglevel=DEBUG -n worker.%%h.
+
+celery -A jscraper beat --loglevel=DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+
+
+
+##then after a bit run this to check on everthing:
+http://127.0.0.1:8000/health/
+

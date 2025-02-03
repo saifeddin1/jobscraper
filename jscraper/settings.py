@@ -1,4 +1,4 @@
- 
+
 import os
 from pathlib import Path
 
@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'notifications',
     'core.apps.CoreConfig',  # Make sure this points to your custom AppConfig
     'users',

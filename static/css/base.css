@@ -485,12 +485,9 @@ h1 {
 
 /* Settings Page Styles */
 .settings-container {
-    max-width: 600px;
+    width: 80%;
     margin: 20px auto;
     padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .settings-container h1 {
@@ -515,8 +512,7 @@ h1 {
     border-radius: 4px;
 }
 
-.settings-container .save-btn {
-    width: 100%;
+.settings-container .save-btn { 
     padding: 10px;
     background-color: rgb(2 78 40 / 76%);
     color: white;
@@ -526,6 +522,4 @@ h1 {
     font-size: 16px;
 }
 
-.settings-container .save-btn:hover {
-    background-color: #0056b3;
-}
+ 

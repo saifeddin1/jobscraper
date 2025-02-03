@@ -8,11 +8,12 @@ from django.dispatch import receiver
 
 settings = Settings.objects.first()
 
+
 def scrape_offers_task(sender, **kwargs):
     settings.refresh_from_db()
     schedule, _ = IntervalSchedule.objects.get_or_create(
         every=settings.interval_number or 1,
-        period=settings.interval_frequency or 'hours',   
+        period=settings.interval_frequency or 'hours',
     )
     try:
         task = PeriodicTask.objects.get(name='Scrape offers')
@@ -28,9 +29,8 @@ def scrape_offers_task(sender, **kwargs):
             interval=schedule,
         )
 
- 
 
 @receiver(post_save, sender=Settings)
-def update_task(sender, instance, created, **kwargs): 
+def update_task(sender, instance, created, **kwargs):
     print('instance: ', instance.interval_number)
     scrape_offers_task(sender)
