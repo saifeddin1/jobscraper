@@ -9,7 +9,7 @@ from .models import Job
 
 
 def scrape_keejob():
-    url = "https://www.keejob.com/"
+    url = "https://www.keejob.com"
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
     job_cards = soup.find_all('div', class_='block_white')
@@ -30,6 +30,8 @@ def scrape_keejob():
             "img") if job_element.find("figure") else None
         source_logo = url + \
             logo_tag["src"] if logo_tag and logo_tag.has_attr("src") else None
+        
+        job_url = url + title_tag.get("href", "")
 
         date_posted = None
         jobs.append({
@@ -39,7 +41,7 @@ def scrape_keejob():
             'location': location,
             'source_logo': source_logo,
             'source_website': "Keejob",
-            'job_url': title_tag.get("href", ""),
+            'job_url':job_url ,
             'date_posted': date_posted,
         })
     return jobs

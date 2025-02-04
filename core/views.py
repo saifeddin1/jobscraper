@@ -10,7 +10,7 @@ from notifications.utils import create_notification
 from .models import Job
 from collections import Counter
 
-
+@login_required
 def job_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
