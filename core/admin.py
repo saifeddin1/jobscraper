@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Job, Settings
-from .scrapers import scrape_all_jobs
+from .utils import scrape_all_jobs
 
 
 @admin.register(Job)

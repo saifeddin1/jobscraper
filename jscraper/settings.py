@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'notifications',
-    'core.apps.CoreConfig',  # Make sure this points to your custom AppConfig
+    'core',  # Make sure this points to your custom AppConfig
     'users',
     'django_celery_beat',
 

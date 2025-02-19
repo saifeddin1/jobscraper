@@ -15,17 +15,18 @@
 
   <body>
     <div class="main-container">
+      
       <aside class="sidebar">
         <h3>Menu</h3>
         <ul>
           <li>
-            <a class="sidebar-link" href="{% url 'dashboard' %}">
-              <i class="fa fa-tachometer-alt"></i> Dashboard
+            <a class="sidebar-link" href="{% url 'job_list' %}">
+              <i class="fa fa-briefcase"></i> Jobs
             </a>
           </li>
           <li>
-            <a class="sidebar-link" href="{% url 'job_list' %}">
-              <i class="fa fa-briefcase"></i> Jobs
+            <a class="sidebar-link" href="{% url 'dashboard' %}">
+              <i class="fa fa-tachometer-alt"></i> Dashboard
             </a>
           </li>
           <li>
@@ -65,6 +66,7 @@
       </aside>
 
       <main class="content">{% block content %} {% endblock %}</main>
+      
       <div class="user-profile">
         <!-- Notification Bell -->
         <div class="notification-icon" id="notificationIcon">
@@ -103,37 +105,12 @@
           </a>
         </div>
       </div>
+
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const userIcon = document.getElementById("userIcon");
         const dropdownMenu = document.getElementById("dropdownMenu");
-        let sidebarLinks = document.querySelectorAll(".sidebar-link");
-        let currentUrl = window.location.pathname; // Get current URL path
-
-        userIcon.addEventListener("click", function (event) {
-          dropdownMenu.classList.toggle("show");
-          event.stopPropagation(); // Prevents closing when clicking inside
-        });
-
-        // Close the dropdown when clicking outside
-        document.addEventListener("click", function (event) {
-          if (
-            !userIcon.contains(event.target) &&
-            !dropdownMenu.contains(event.target)
-          ) {
-            dropdownMenu.classList.remove("show");
-          }
-        });
-
-        sidebarLinks.forEach((link) => {
-          if (link.getAttribute("href") === currentUrl) {
-            link.classList.add("active"); // Add active class
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
         const notificationIcon = document.getElementById("notificationIcon");
         const notificationDropdown = document.getElementById(
           "notificationDropdown"
@@ -146,13 +123,41 @@
         );
         const loadMoreBtn = document.createElement("button");
 
-        loadMoreBtn.innerText = "Load More";
-        loadMoreBtn.classList.add("load-more-btn");
+        const helpButton = document.getElementById("helpButton");
+        const helpPopup = document.getElementById("helpPopup");
+        const closeHelpPopup = document.getElementById("closeHelpPopup");
 
+        let sidebarLinks = document.querySelectorAll(".sidebar-link");
+        let currentUrl = window.location.pathname; // Get current URL path
         let currentPage = 1;
         let totalLoadedNotifications = 0; // Track how many notifications have been loaded
 
-        // Function to fetch notifications
+        loadMoreBtn.innerText = "Load More";
+        loadMoreBtn.classList.add("load-more-btn");
+
+        /// User icon logic /// 
+        userIcon.addEventListener("click", function (event) {
+          dropdownMenu.classList.toggle("show");
+          event.stopPropagation(); // Prevents closing when clicking inside
+        });
+ 
+        document.addEventListener("click", function (event) {
+          if (
+            !userIcon.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.classList.remove("show");
+          }
+        });
+
+        /// Sidebar logic /// 
+        sidebarLinks.forEach((link) => {
+          if (link.getAttribute("href") === currentUrl) {
+            link.classList.add("active"); // Add active class
+          }
+        });
+
+        /// Notification logic /// 
         function fetchNotifications(page = 1, append = false) {
           fetch(`/notifications/?page=${page}`)
             .then((response) => response.json())
@@ -213,8 +218,7 @@
               console.error("Error fetching notifications:", error)
             );
         }
-
-        // Function to mark a notification as read
+ 
         function markAsRead(notificationId, element) {
           fetch(`/notifications/mark-as-read/${notificationId}/`)
             .then((response) => response.json())
@@ -228,8 +232,7 @@
               console.error("Error marking notification as read:", error)
             );
         }
-
-        // Function to update unread count
+ 
         function updateUnreadCount() {
           let unreadItems = document.querySelectorAll(
             ".notification-item.unread"
@@ -239,7 +242,6 @@
           notificationCount.innerText = unreadItems.length;
         }
 
-        // Function to format date in English (MM/DD/YYYY HH:mm AM/PM)
         function formatDate(dateString) {
           let createdAt = new Date(dateString);
           return createdAt.toLocaleDateString("en-US", {
@@ -251,15 +253,13 @@
             hour12: true,
           });
         }
-
-        // Show/Hide Notification Dropdown
+ 
         notificationIcon.addEventListener("click", function (event) {
           event.stopPropagation();
           notificationDropdown.classList.toggle("show");
           fetchNotifications(); // Load first page of notifications
         });
-
-        // Close dropdown when clicking outside
+ 
         document.addEventListener("click", function (event) {
           if (
             !notificationIcon.contains(event.target) &&
@@ -268,22 +268,14 @@
             notificationDropdown.classList.remove("show");
           }
         });
-
-        // Load More Button Click
+ 
         loadMoreBtn.addEventListener("click", function () {
           fetchNotifications(currentPage, true);
         });
-
-        // Fetch notifications initially
+ 
         fetchNotifications();
-      });
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const helpButton = document.getElementById("helpButton");
-        const helpPopup = document.getElementById("helpPopup");
-        const closeHelpPopup = document.getElementById("closeHelpPopup");
-
-        // Show popup when clicking the Help button
+        /// Help button logic /// 
         helpButton.addEventListener("click", function () {
           helpPopup.style.display = "flex";
         });

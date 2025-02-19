@@ -1,11 +1,14 @@
-{% extends "base.html" %} {% load static %} {% block title %} Favourites {% endblock %}   {% block styles %}
-<link rel="stylesheet" href="{% static 'css/jobs.css' %}" />
-{% endblock %} {% block content %}
+ 
 
-<div class="grid">
+<div class="grid" id="jobList">
+  <!-- Job cards will be displayed here -->
   {% for job in jobs %}
   <a href="{% url 'job_detail' job.id %}">
     <div class="card" data-job-id="{{ job.id }}">
+      <i
+        class="heart-icon far fa-heart {% if job in user.favorited_jobs.all %}fa-solid{% endif %}"
+        onclick="toggleFavorite(event, '{{ job.id }}')"
+      ></i>
       {% if job.source_logo %}
       <img src="{{ job.source_logo }}" alt="Source Logo" />
       {% endif %}
@@ -18,5 +21,3 @@
   </a>
   {% endfor %}
 </div>
-
-{% endblock %}

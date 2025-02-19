@@ -95,22 +95,3 @@ def scrape_tunisie_travail():
     return jobs
 
 
-def scrape_all_jobs():
-    print('scrape_all_jobs: ........')
-    Notification.objects.filter(notification_type="new_jobs_added").delete()
-    all_jobs = scrape_keejob() + scrape_tunisie_travail() 
-
-    for job_data in all_jobs:
-        if not Job.objects.filter(title__icontains=job_data["title"]).exists():
-            Job.objects.create(
-                title=job_data["title"],
-                description=job_data["description"],
-                source_website=job_data["source_website"],
-                job_url=job_data["job_url"],
-                source_logo=job_data["source_logo"],
-                location=job_data["location"],
-                company=job_data["company"],
-                date_posted=job_data["date_posted"]
-            )
-    create_notification("new_jobs_added")
-    print("done")

@@ -1,4 +1,4 @@
-from core.scrapers import scrape_all_jobs
+from core.utils import scrape_all_jobs
 from jscraper.celery import app
 
 

@@ -4,18 +4,17 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+ 
 
 from .models import Settings
 from notifications.utils import create_notification
 from .models import Job
 from collections import Counter
-
-@login_required
+ 
 def job_list(request):
     if not request.user.is_authenticated:
-        return redirect('login')
-    # scrape_all_jobs()
-
+        return redirect('login') 
+ 
     jobs_list = Job.objects.all().order_by("-scraped_at")
 
     # Pagination: Show 10 jobs per page
@@ -26,15 +25,28 @@ def job_list(request):
     print('user.favorited_jobs.add: ', request.user.favorited_jobs.all())
     return render(request, "scraper/job_list.html", {"jobs": jobs, "user": request.user})
 
-
-@login_required
+ 
 def job_detail(request, job_id):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    
     job = get_object_or_404(Job, id=job_id)
     return render(request, "scraper/job_details.html", {"job": job})
 
 
-@login_required
+ 
+def saved_jobs_view(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    user_jobs = request.user.favorited_jobs.all()
+    return render(request, 'scraper/saved_jobs.html',
+                  {'user': request.user, "jobs": user_jobs, })
+ 
 def dashboard_view(request):
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+
     total_jobs = Job.objects.count()
     saved_jobs = request.user.favorited_jobs.count()
 
@@ -75,16 +87,9 @@ def dashboard_view(request):
         },
     )
 
-
-@login_required
-def saved_jobs_view(request):
-    user_jobs = request.user.favorited_jobs.all()
-    return render(request, 'scraper/saved_jobs.html',
-                  {'user': request.user, "jobs": user_jobs, })
-
-
-@login_required
-def toggle_favorite(request, job_id):
+ 
+def toggle_favorite(request, job_id): 
+    
     user = request.user
     job = get_object_or_404(Job, id=job_id)
 
@@ -105,11 +110,13 @@ def toggle_favorite(request, job_id):
     print("Current favorited jobs:", user.favorited_jobs.all())  # Debugging
     return JsonResponse({"success": True})
 
-
-@login_required
+ 
 def settings_view(request):
-    settings, created = Settings.objects.get_or_create(
-        id=1)  # Ensure only one settings instance exists
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    settings = Settings.objects.first()
 
     if request.method == "POST":
         interval_number = request.POST.get("interval_number")
